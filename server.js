@@ -4,7 +4,7 @@ const cors = require('cors');
 const fileUpload = require('express-fileupload');
 const morgan = require('morgan');
 const _ = require('lodash');
-const Question = require("./server/models/questions.model");
+const Coin = require("./server/models/coins.model");
 
 const app = express();
 
@@ -18,16 +18,17 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(morgan('dev'));
 
-app.post('/api/submit_question', async (req, res) => {
+app.post('/api/create_coin', async (req, res) => {
+  console.log(req.body);
   let filename = "";
   if(req.files) {
     let myfile = req.files.file;
     filename = Date.now()+myfile.name.substring(myfile.name.indexOf("."), myfile.name.length);
     myfile.mv('./server/uploads/' + filename);
   }
-  Question.submitQuestion(req.body, filename, function(err, result) {
+  Coin.createCoin(req.body, filename, function(err, result) {
     if(err) return res.send({status:false, message: "Failed"});
-    else res.send({ status:true, message: "Success", questionId:result.insertId });
+    else res.send({ status: true, message: "Successfully Created", coinId: result.insertId });
   });
 });
 
